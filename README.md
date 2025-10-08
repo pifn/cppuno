@@ -1,4 +1,4 @@
-cards names: <br>
+->Cards names: <br>
 start: <br>
     0 for number <br>
     1 for special card <br>
@@ -19,6 +19,7 @@ end: <br>
         1 for wild draw four <br>
 empty is 444 <br>
  <br>
+ ->Amount of cards
 Uno includes 108 cards: <br>
  25 in each of four color suits (red, yellow, green, blue), <br>
   each suit consisting of one zero, two each of 1 through 9, <br>
