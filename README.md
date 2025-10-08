@@ -14,9 +14,8 @@ end: <br>
         0 for skip <br>
         1 for draw two <br>
         2 for reverse <br>
-        or <br>
-        0 for wild card <br>
-        1 for wild draw four <br>
+        3 for wild card <br>
+        4 for wild draw four <br>
 empty is 444 <br>
  <br>
  ->Amount of cards
