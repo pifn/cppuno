@@ -72,7 +72,7 @@ void DisplayCard(int card)
 		break;
 	case 4:
 		//Wild
-		if(card == 140)
+		if(card == 143)
 			cout<<"sceglie colore";
 		else
 		{
@@ -96,23 +96,24 @@ void RandomCards(int N,int cartas[192])
 }
 //ac = active card
 //pc = card being played
+//dice sempre si per i numeri e no per i +4
 bool Verify(int ac, int pc)
 {
-	if(ac-(ac%100-ac%10)==101||ac==141)
+	if(ac-(ac%100-ac%10)==101&&pc-(pc%100-pc%10)==101)
+	    return 1;
+	if(ac-(ac%100-ac%10)==104)
 	{
-		//+2
+	    if(pc==144)
+	        return 1;
+        else if((pc-(pc%100-pc%10)==101)&&(pc%100-pc%10==ac%100-ac%10))
+            return 1;
+        else
+            return 0;
 	}
+	else if((ac-(ac%100-ac%10)!=104&&ac-(ac%100-ac%10)!=101)&&((pc-pc%100==ac-ac%100||pc-(pc%100-pc%10)==ac-(ac%100-ac%10)||pc-pc%10==140))
+        return 1;
 	else
-	{
-		if(pc-pc%100==ac-ac%100||pc-(pc%100-pc%10)==ac-(ac%100-ac%10)||pc-pc%10==140)
-		{
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
-	}
+		return 0;
 }
 int main()
 {
