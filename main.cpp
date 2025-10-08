@@ -30,7 +30,7 @@ empty is 444
   each suit consisting of one zero, two each of 1 through 9,
  and two each of the action cards "Skip", "Draw Two", and "Reverse".
  The deck also attains four "Wild" cards and four "Wild Draw Four"*/
- //quando si gioca un card nero chiede il colore e cambia l'id della active card in base alla scelta
+//quando si gioca un card nero chiede il colore e cambia l'id della active card in base alla scelta
 void DisplayCard(int card)
 {
 	if((card - card%100)/100==1&&card%100-card%10!=40)
@@ -98,21 +98,21 @@ void RandomCards(int N,int cartas[192])
 //pc = card being played
 bool Verify(int ac, int pc)
 {
-    if(ac-(ac%100-ac%10)==101||ac==141)
-    {
-        //+2
-    }
-    else
-    {
-        if(pc-pc%100==ac-ac%100||pc-(pc%100-pc%10)==ac-(ac%100-ac%10)||pc-pc%10==140)
-        {
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
-    }
+	if(ac-(ac%100-ac%10)==101||ac==141)
+	{
+		//+2
+	}
+	else
+	{
+		if(pc-pc%100==ac-ac%100||pc-(pc%100-pc%10)==ac-(ac%100-ac%10)||pc-pc%10==140)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
 }
 int main()
 {
@@ -200,21 +200,41 @@ int main()
 			cout<<endl;
 		}
 	}
-	int v = 0, carta;
+	int v = 0, carta, c,actcard;
 	bool reverse = 0;
 	while(v == 0)
 	{
-		for(int i = 0 !reverse ? 0 : qbot;(i<qbot&&!reverse)||(i>0&&reverse);i+= reverse ? -1 : 1)
+		int i;
+		for((!reverse) ? (i = 0) : (i = qbot); (i<=qbot&&!reverse)||(i>=0&&reverse); reverse ? (i--) : (i++))
 		{
-		    cout<<endl<<"reverse"<<reverse<<endl<<i;
-		    cin>>carta;
-		  /*  if(i==0)
-		    {
-		        cout<<"Sceglie una carta da 1 a "<<sizeof(pcards[0]);
-		        cin<<carta;
-		    }*/
+			if(/*pode jogar a carta*/)
+			{
+				//cout<<endl<<"reverse"<<reverse<<endl<<i;
+				if(i==0)
+				{
+					for(c = 0; pcards[0][c]!=444; c++);
+					do {
+						cout<<"Sceglie una carta da 1 a "<<c;
+						cin>>carta;
+						carta--;
+					} while(!Verify(actcard,pcards[0][carta]))
+						//joga a carta
+					}
+				else
+				{
+					for(c = 0; pcards[i][c]!=444; c++);
+					do {
+						carta = rand() % c;
+					} while(!Verify(actcard,pcards[i][carta]))
+						//joga a carta
+					}
+				actcard = pcards[i][carta];
+			}
+			else
+			{
+			    //pescar uma carta
+			}
 		}
 	}
 	return 0;
-
 }
