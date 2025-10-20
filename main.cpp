@@ -35,10 +35,6 @@ empty is 444
  and two each of the action cards "Skip", "Draw Two", and "Reverse".
  The deck also attains four "Wild" cards and four "Wild Draw Four"*/
 //quando si gioca un card nero chiede il colore e cambia l'id della active card in base alla scelta
-
-//changed DisplayCard to CardName
-//updated Verify
-//added ShowCards
 void CardName(int card)
 {
 	if((card - card%100)/100==1&&card%100-card%10!=40)
@@ -265,4 +261,5 @@ int main()
 	}
 	return 0;
 }
+
 
