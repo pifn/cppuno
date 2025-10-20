@@ -137,6 +137,12 @@ void ShowCards(int pcd[4], int qb)
 				//trova la carta con il bot 1 
 				break;
 }
+int Amount(int c[])
+{
+	int i;
+	for(i = 0;c[i] != 444;i++);
+	return i; 
+}
 int main()
 {
 	int cards[192];
@@ -195,7 +201,7 @@ int main()
 		cout<<"Con quanti bot vuoi giocare? (1-3)";
 		cin>>qbot;
 	} while(qbot<1||qbot>3);
-	int pcards[qbot+1][qtt];
+	int pcards[qbot+1][qtt],block[qbot+1];
 	for(int i = 0; i<=qbot; i++)
 	{
 		for(int j = 0; j<qtt; j++)
@@ -230,32 +236,52 @@ int main()
 		int i;
 		for((!reverse) ? (i = 0) : (i = qbot); (i<=qbot&&!reverse)||(i>=0&&reverse); reverse ? (i--) : (i++))
 		{
-			if(/*pode jogar a carta*/)
+			bool bol = false;
+			for(int j = 0;j<Amount(pcards[i]);j++)
+			{
+				Verify(actcard,pcards[i][j]) ? b = 1 : b = b;
+			}
+			if(b) //pu'o giocare
 			{
 				//cout<<endl<<"reverse"<<reverse<<endl<<i;
-				if(i==0)
+				if(i==0) //player
 				{
 					for(c = 0; pcards[0][c]!=444; c++);
 					do {
 						cout<<"Sceglie una carta da 1 a "<<c;
 						cin>>carta;
 						carta--;
-					} while(!Verify(actcard,pcards[0][carta]))
-						//joga a carta
+					} while(!Verify(actcard,pcards[0][carta]));
+						if(pcards[0][carta]%100-pcards[0][carta]%10==40)
+						{
+							int cu;
+							cout<<"Quale colore vuoi?(1 per rosso, 2 per giallo, 3 per verde, 4 per blu)"<<endl;
+							cin>>cu;
+							cu--;
+							cu*=10;
+							pcards[0][carta] = pcards-(pcards[0][carta]%100-pcards[0][carta]%10)+cu;
+						 //joga a carta
 					}
-				else
+				else //bot
 				{
 					for(c = 0; pcards[i][c]!=444; c++);
 					do {
 						carta = rand() % c;
-					} while(!Verify(actcard,pcards[i][carta]))
+					} while(!Verify(actcard,pcards[i][carta]));
 						//joga a carta
+						if(pcards[i][carta]%100-pcards[i][carta]%10==40)
+							{
+								int cu = pcards[i][rand() % c];
+								cu = (cu % 100 - cu % 10)*10;
+								pcards[i][carta] = pcards-(pcards[i][carta]%100-pcards[i][carta]%10)+cu;
 					}
 				actcard = pcards[i][carta];
 			}
-			else
+			else // non puo giocare
 			{
 			    //pescar uma carta
+				pcards[i][Amount(pcards[i])] = cards[cont];
+				cont++;
 			}
 		}
 	}
@@ -263,3 +289,12 @@ int main()
 }
 
 
+/*dopo ogni mossa deve verificare:
+gli effetti speciali(+2,reverso,block,+4,cambia colore)
+quantit'a di carte nel baralho(cont>=192)
+*/
+/*devo cambiare la randomcards per far che tenha um numero inicial (ou seja randomiza as cartas a partir da 14) 
+p dps quando tiver q randomizar no meio da partida eu coloco as cartas dos players + actcard no inicio do baralho assim elas nn se repetem
+*/
+//como krls eu vou implementar o +2 e +4 no jogo plmd
+//implementar as cartas multiplas(jogar varias cartas ao msm tempo)
