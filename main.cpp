@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 using namespace std;
-#Define Mx 2 //tamanho do mapa na horizontal
-#Define My 2 //tamanho do mapa na vertical
-const QCx = (Mx-Mx%5)/5;
-const QCy = (My-My%5)/5;
+#define Mx 2 //tamanho do mapa na horizontal
+#define My 2 //tamanho do mapa na vertical
+const float QCx = (Mx-Mx%5)/5;
+const float QCy = (My-My%5)/5;
 /*
 cards names:
 start:
@@ -88,8 +88,10 @@ void CardName(int card)
 		break;
 	}
 }
-void RandomCards(int N,int cartas[192])
+void RandomCards(int N,int cartas[192], int lcartas[192])
 {
+	for(int i = 0; i<N; i++)
+		lcartas[i] = cartas[i];
 	int temp;
 	for(int i = 0; i<N; i++)
 	{
@@ -99,202 +101,176 @@ void RandomCards(int N,int cartas[192])
 	}
 }
 //ac = active card
-//pc = card being played
-//dice sempre si per i numeri e no per i +4
-bool Verify(int ac, int pc)
-{
-	if((ac-(ac%100-ac%10))==pc-(pc%100-pc%10)) //se 'e la stessa carta ma di colore diverso
-		return 1;
-	else if(ac%100-ac%10==pc%100-pc%10&&ac-(ac%100-ac%10)!=101&&ac-(ac%100-ac%10)!=104) //se 'e della stessa colore e la carta non 'e un +2 o +4
-		return 1;
-	else if(pc-(pc%100-pc%10)==104) //se ha giocato un +4
-		return 1;
-	else
-		return 0;
-}
-void Repeat(char txt[], int D, int A)
-{
-	for(int i = 0;i<A;i++)
-		{
-			for(int j = 0;j<D;j++)
-					cout<<txt[j];
-		}
-}
-//pcd = pcards
-//qb = quantità di bot da 1 a 3
-void ShowCards(int pcd[4], int qb)
-{
-	int MD[qb], SV[qb];
-	switch(qb)
-		{
-			case 1:
-				//trova la carta con il bot 1 
-				break;
-			case 2:
-				
-				break;
-			case 3:
-				//trova la carta con il bot 1 
-				break;
-}
-int Amount(int c[])
+//pc = card(s) being played
+//cu = amount of cards
+//ps= plus
+//errore:dice sempre si per i numeri e no per i +4
+bool Verify(int ac, int pc[],int cu, int ps)
 {
 	int i;
-	for(i = 0;c[i] != 444;i++);
-	return i; 
-}
-int main()
-{
-	int cards[192];
-	int qtt=0;
-	srand(time(NULL));
-	//numeri
-	for(int i = 0; i<4; i++)
+	for(i = 0; (i<cu-1)&&((pc[i]-pc[i]%100)==(pc[i+1]-pc[i+1]%100)); i++);
+	if(i==cu-1)
 	{
-		cards[qtt] = i*10;
-		qtt++;
-		for(int j = 1; j<10; j++)
+		if((ps>0)&&(((ac-(ac%100)+ac%10)==101)||((ac-(ac%100)+ac%10)==104)))
 		{
-			for(int k = 0; k<4; k++)
-			{
-				cards[qtt] = i*10 + j;
-				qtt++;
-			}
-		}
-	}
-	//special cards (coloured)
-	for(int i = 0; i<4; i++)
-	{
-		for(int j = 0; j<3; j++)
-		{
-			for(int k = 0; k<2; k++)
-			{
-				cards[qtt] = 100 + i*10 + j;
-				qtt++;
-			}
-		}
-	}
-	//wild cards
-	for(int i = 0; i<2; i++)
-	{
-		for(int j = 0; j<4; j++)
-		{
-			cards[qtt] = 140 + i;
-			qtt++;
-		}
-	}
-	/*cout<<qtt<<endl;
-	for(int i = 0;i<qtt;i++)
-	{
-	    cout<<cards[i]<<endl;
-	}
-	cout<<"random:"<<endl;*/
+			if((ac-(ac%100)+ac%10)==(pc-(pc%100)+pc%10))
+				return 1;
+			else
+				return 0;
 
-	//randomizare le carte
-	RandomCards(qtt,cards);
-	/*for(int i = 0;i<qtt;i++)
-	{
-	    cout<<cards[i]<<endl;
-	}*/
-	int qbot;
-	do {
-		cout<<"Con quanti bot vuoi giocare? (1-3)";
-		cin>>qbot;
-	} while(qbot<1||qbot>3);
-	int pcards[qbot+1][qtt],block[qbot+1];
-	for(int i = 0; i<=qbot; i++)
-	{
-		for(int j = 0; j<qtt; j++)
+		}
+		else
 		{
-			pcards[i][j] = 444;
+		    if(((ac%100)-(ac%10))==((pc%100)-(pc%10)))
+		        return 1;
+            else if()
 		}
 	}
-	int cont = 0;
-	for(int j = 0; j<=qbot; j++)
-	{
-		for(int i = 0; i<7; i++)
-		{
-			pcards[j][i] = cards[cont];
-			cont++;
-		}
-	}
-	for(int i = 0; i<=qbot; i++)
-	{
-		cout<<"player "<<i+1<<endl;
-		for(int j = 0; j<7; j++)
-		{
-			cout<<"id carta "<<j+1<<" :"<<pcards[i][j]<<endl;
-			cout<<"carta: ";
-			CardName(pcards[i][j]);
-			cout<<endl;
-		}
-	}
-	int v = 0, carta, c,actcard;
-	bool reverse = 0;
-	while(v == 0)
+	else
+	    return false;
+}
+	int Amount(int c[])
 	{
 		int i;
-		for((!reverse) ? (i = 0) : (i = qbot); (i<=qbot&&!reverse)||(i>=0&&reverse); reverse ? (i--) : (i++))
+		for(i = 0; c[i] != 444; i++);
+		return i;
+	}
+
+	int main()
+	{
+		int cards[192], lcards[192];
+		int qtt=0;
+		srand(time(NULL));
+		//numeri
+		for(int i = 0; i<4; i++)
 		{
-			bool bol = false;
-			for(int j = 0;j<Amount(pcards[i]);j++)
+			cards[qtt] = i*10;
+			qtt++;
+			for(int j = 1; j<10; j++)
 			{
-				Verify(actcard,pcards[i][j]) ? b = 1 : b = b;
-			}
-			if(b) //pu'o giocare
-			{
-				//cout<<endl<<"reverse"<<reverse<<endl<<i;
-				if(i==0) //player
+				for(int k = 0; k<4; k++)
 				{
-					for(c = 0; pcards[0][c]!=444; c++);
-					do {
-						cout<<"Sceglie una carta da 1 a "<<c;
-						cin>>carta;
-						carta--;
-					} while(!Verify(actcard,pcards[0][carta]));
-						if(pcards[0][carta]%100-pcards[0][carta]%10==40)
-						{
-							int cu;
-							cout<<"Quale colore vuoi?(1 per rosso, 2 per giallo, 3 per verde, 4 per blu)"<<endl;
-							cin>>cu;
-							cu--;
-							cu*=10;
-							pcards[0][carta] = pcards-(pcards[0][carta]%100-pcards[0][carta]%10)+cu;
-						 //joga a carta
-					}
-				else //bot
-				{
-					for(c = 0; pcards[i][c]!=444; c++);
-					do {
-						carta = rand() % c;
-					} while(!Verify(actcard,pcards[i][carta]));
-						//joga a carta
-						if(pcards[i][carta]%100-pcards[i][carta]%10==40)
-							{
-								int cu = pcards[i][rand() % c];
-								cu = (cu % 100 - cu % 10)*10;
-								pcards[i][carta] = pcards-(pcards[i][carta]%100-pcards[i][carta]%10)+cu;
-					}
-				actcard = pcards[i][carta];
+					cards[qtt] = i*10 + j;
+					qtt++;
+				}
 			}
-			else // non puo giocare
+		}
+		//special cards (coloured)
+		for(int i = 0; i<4; i++)
+		{
+			for(int j = 0; j<3; j++)
 			{
-			    //pescar uma carta
-				pcards[i][Amount(pcards[i])] = cards[cont];
+				for(int k = 0; k<2; k++)
+				{
+					cards[qtt] = 100 + i*10 + j;
+					qtt++;
+				}
+			}
+		}
+		//wild cards
+		for(int i = 0; i<2; i++)
+		{
+			for(int j = 0; j<4; j++)
+			{
+				cards[qtt] = 140 + i;
+				qtt++;
+			}
+		}
+		RandomCards(qtt,cards,lcards);
+		int qbot;
+		do {
+			cout<<"Con quanti bot vuoi giocare? (1-3)";
+			cin>>qbot;
+		} while(qbot<1||qbot>3);
+		int pcards[qbot+1][qtt];
+		for(int i = 0; i<=qbot; i++)
+		{
+			for(int j = 0; j<qtt; j++)
+			{
+				pcards[i][j] = 444;
+			}
+		}
+		int cont = 0;
+		for(int j = 0; j<=qbot; j++)
+		{
+			for(int i = 0; i<7; i++)
+			{
+				pcards[j][i] = cards[cont];
 				cont++;
 			}
 		}
+		for(int i = 0; i<=qbot; i++)
+		{
+			cout<<endl<<"player "<<i+1<<endl;
+			for(int j = 0; j<7; j++)
+			{
+				cout<<"id carta "<<j+1<<" :"<<pcards[i][j]<<endl;
+				cout<<"carta: ";
+				CardName(pcards[i][j]);
+				cout<<endl;
+			}
+		}
+		int turn, actcard,plus,block;
+		bool repeat;
+		turn = rand() % (qbot+1);
+		int v = 0;
+		while(v != -1)
+		{
+
+			//mostrar as cartas!!!!!!!!!!!!!
+			if(plus>0)
+			{
+				bool pus=0;
+				for(int i = 0; (i<Amount(pcards[turn])||pus); i++)
+				{
+					if((((pcards[turn][i] - (pcards[turn][i]%100) + (pcards[turn][i]%10))==101)&&((actcard - (actcard%100) + (actcard%10))==101))||(((pcards[turn][i] - (pcards[turn][i]%100) + (pcards[turn][i]%10))==104)&&((actcard - (actcard%100) + (actcard%10))==104)))
+						pus = 1;
+				}
+				if(!pus)
+				{
+					turn = turn == qbot ? turn + 1 : 0;
+					//make them buy cards
+					plus = 0;
+				}
+			}
+			//player's turn
+			if(turn ==0)
+			{
+				int ncartas;
+				bool b;
+				do {
+					cout<<endl<<"Quante carte vuoi giocare?"<<endl;
+					cin>>ncartas;
+					int choice[ncartas];
+					for(int i = 0; i<ncartas; i++)
+					{
+						cout<<"Carta no"<<i+1;
+						cin>>choice[i];
+					}
+					b = Verify(actcard, choice,ncartas,plus);
+				} while(!b);
+
+			}
+
+
+			turn = turn == qbot ? turn + 1 : 0;
+			for(int i = 0; i<qbot; i++)
+			{
+				int j;
+				for(j = 0; pcards[i][j]!=444; j++);
+				v = j == 0 ? i : v;
+			}
+		}
+		return 0;
 	}
-	return 0;
-}
 
 
-/*dopo ogni mossa deve verificare:
-gli effetti speciali(+2,reverso,block,+4,cambia colore)
-quantit'a di carte nel baralho(cont>=192)
-*/
-/*devo cambiare la randomcards per far che tenha um numero inicial (ou seja randomiza as cartas a partir da 14) 
-p dps quando tiver q randomizar no meio da partida eu coloco as cartas dos players + actcard no inicio do baralho assim elas nn se repetem
-*/
+	/*dopo ogni mossa deve verificare:
+	gli effetti speciali(+2,reverso,block,+4,cambia colore)
+	quantit'a di carte nel baralho(cont>=192)
+	*/
+	/*devo cambiare la randomcards per far che tenha um numero inicial (ou seja randomiza as cartas a partir da 14)
+	p dps quando tiver q randomizar no meio da partida eu coloco as cartas dos players + actcard no inicio do baralho assim elas nn se repetem
+	*/
 //como krls eu vou implementar o +2 e +4 no jogo plmd
 //implementar as cartas multiplas(jogar varias cartas ao msm tempo)
