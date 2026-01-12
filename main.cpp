@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 using namespace std;
+#define qtt 170
 #define Mx 2 //tamanho do mapa na horizontal
 #define My 2 //tamanho do mapa na vertical
 const float QCx = (Mx-Mx%5)/5;
 const float QCy = (My-My%5)/5;
+
 /*
 cards names:
 start:
@@ -24,8 +26,8 @@ end:
         1 for draw two
         2 for reverse
 
-        0 for wild card
-        1 for wild draw four
+        3 for wild card
+        4 for wild draw four
 
 empty is 444
 */
@@ -35,6 +37,13 @@ empty is 444
  and two each of the action cards "Skip", "Draw Two", and "Reverse".
  The deck also attains four "Wild" cards and four "Wild Draw Four"*/
 //quando si gioca un card nero chiede il colore e cambia l'id della active card in base alla scelta
+
+void Scambio(int *a, int *b)
+{
+	*a += *b;
+	*b = *a - *b;
+	*a -= *b;
+}
 void CardName(int card)
 {
 	if((card - card%100)/100==1&&card%100-card%10!=40)
@@ -51,7 +60,7 @@ void CardName(int card)
 			cout<<"cambia giro";
 			break;
 		default:
-			cout<<"errore nel 2 switch della funzione CardName";
+			cout<<endl<<"\033[1;31m errore nel 2 switch della funzione CardName \033[0m ";
 			cout<<card%100 - card%10;
 			break;
 		}
@@ -63,16 +72,20 @@ void CardName(int card)
 	switch((card % 100 - card % 10)/10)
 	{
 	case 0:
-		cout<<" rosso";
+		cout<<"\033[1;31m ";
+		cout<<" rosso \033[0m";
 		break;
 	case 1:
-		cout<<" giallo";
+		cout<<"\033[1;32m ";
+		cout<<" verde \033[0m";
 		break;
 	case 2:
-		cout<<" verde";
+		cout<<"\033[1;33m ";
+		cout<<" giallo \033[0m";
 		break;
 	case 3:
-		cout<<" blu";
+		cout<<"\033[1;34m ";
+		cout<<" blu \033[0m";
 		break;
 	case 4:
 		//Wild
@@ -84,18 +97,8 @@ void CardName(int card)
 		}
 		break;
 	default:
-		cout<<"errore nel 1 switch in function CardName";
+		cout<<endl<<"\033[1;31m errore nel 1 switch in function CardName \033[0m ";
 		break;
-	}
-}
-void RandomCards(int N,int cartas[192])
-{
-	int temp;
-	for(int i = 0; i<N; i++)
-	{
-		int pos= rand() % N, temp = cartas[i];
-		cartas[i] = cartas[pos];
-		cartas[pos] = temp;
 	}
 }
 //ac = active card
@@ -149,30 +152,59 @@ void Organize(int cartas[])
 		{
 			if(cartas[i+1]<cartas[i])
 			{
-				cartas[i] += cartas[i+1];
-				cartas[i+1] = cartas[i] - cartas[i+1];
-				cartas[i] = cartas[i] - cartas[i+1];
+				Scambio(&cartas[i],&cartas[i+1]);
 				v = 1;
 			}
 		}
 	}
 }
+void RandomCards(int N,int cartas[qtt])
+{
+	int temp;
+	for(int i = 0; i<N; i++)
+	{
+		int pos= rand() % N;
+		Scambio(&cartas[i],&cartas[pos]);
+	}
+}
+void Randomize(int cartas[qtt], int qb, int pcartas[][qtt], int ac, int *cont)
+{
+	*cont = 0;
+	int k;
+	for(int i = 0; i<qb; i++)
+	{
+		for(int j=0; j<Amount(pcartas[i]); j++)
+		{
+			for(k=0; cartas[k]!=pcartas[i][j]; k++);
+			Scambio(&cartas[k],&cartas[*cont]);
+			*cont++;
+		}
+	}
+	for(k = 0; cartas[k]!=ac; k++);
+	Scambio(&cartas[k],&cartas[*cont]);
+	*cont++;
+
+	for(int i = *cont; i<qtt; i++)
+	{
+		int r = (rand() % (qtt-*cont))+*cont;
+		Scambio(&cartas[i],&cartas[r]);
+	}
+}
 int main()
 {
-	int cards[192];
-	int qtt=0;
+	int cards[qtt];
 	srand(time(NULL));
+	int cont = 0;
 	//numeri
 	for(int i = 0; i<4; i++)
 	{
-		cards[qtt] = i*10;
-		qtt++;
+		cards[cont] = i*10;
 		for(int j = 1; j<10; j++)
 		{
 			for(int k = 0; k<4; k++)
 			{
-				cards[qtt] = i*10 + j;
-				qtt++;
+				cards[cont] = i*10 + j;
+				cont++;
 			}
 		}
 	}
@@ -183,19 +215,16 @@ int main()
 		{
 			for(int k = 0; k<2; k++)
 			{
-				cards[qtt] = 100 + i*10 + j;
-				qtt++;
+				cards[cont] = 100 + i*10 + j;
+				cont++;
 			}
 		}
 	}
 	//wild cards
 	for(int i = 0; i<2; i++)
 	{
-		for(int j = 0; j<4; j++)
-		{
-			cards[qtt] = 140 + i;
-			qtt++;
-		}
+		cards[cont] = 143 + i;
+		cont++;
 	}
 	RandomCards(qtt,cards);
 	int qbot;
@@ -211,7 +240,7 @@ int main()
 			pcards[i][j] = 444;
 		}
 	}
-	int cont = 0;
+	cont = 0;
 	for(int j = 0; j<=qbot; j++)
 	{
 		for(int i = 0; i<7; i++)
@@ -222,9 +251,10 @@ int main()
 	}
 	int turn, actcard = cards[cont],plus=0,block=0;
 	cont++;
-	bool repeat = 0;;
+	bool repeat = 0;
 	turn = rand() % (qbot+1);
 	int v = -1;
+	cout<<endl<<"Inizia il player "<<turn+1;
 	while(v == -1)
 	{
 
@@ -294,10 +324,10 @@ int main()
 				bol = Verify(actcard, choice,ncartas,plus);
 			} while(!bol);
 		}
-
-
-
-
+		if(cont == qtt)
+		{
+			Randomize(cards,qbot,pcards,actcard,&cont);
+		}
 		turn = turn == qbot ? 0 : turn + 1;
 		for(int i = 0; i<qbot; i++)
 		{
@@ -308,8 +338,3 @@ int main()
 	}
 	return 0;
 }
-
-
-/*devo cambiare la randomcards per far che tenha um numero inicial (ou seja randomiza as cartas a partir da 14)
-p dps quando tiver q randomizar no meio da partida eu coloco as cartas dos players + actcard no inicio do baralho assim elas nn se repetem
-*/
