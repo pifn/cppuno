@@ -4,8 +4,8 @@ start: <br>
     1 for special card <br>
 middle: <br>
     0 for red <br>
-    1 for yellow <br>
-    2 for green <br>
+    1 for green <br>
+    2 for yellow <br>
     3 for blue <br>
     4 for wild <br>
 end: <br>
