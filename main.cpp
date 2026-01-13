@@ -148,7 +148,7 @@ void Organize(int cartas[])
 	while(v)
 	{
 		v = 0;
-		for(int i =0; i<191; i++)
+		for(int i =0; i<qtt; i++)
 		{
 			if(cartas[i+1]<cartas[i])
 			{
@@ -189,6 +189,24 @@ void Randomize(int cartas[qtt], int qb, int pcartas[][qtt], int ac, int *cont)
 		int r = (rand() % (qtt-*cont))+*cont;
 		Scambio(&cartas[i],&cartas[r]);
 	}
+}
+int ChoseColor(int cartas[qtt])
+{
+    int r[] = {0,0,0,0};
+    for(int i = 0;i<Amount(cartas);i++)
+        r[(cartas[i]%100-cartas[i]%10)/10]++;
+	int s = 0;
+	for(int i = 0;i<4;i++)
+	    s+=r[i];
+	int random = (rand() % s )+ 1;
+	for(int i = 0;i<4;i++)
+	{
+	    if(random<=r[i])
+	        return i;
+        else 
+            random -= r[i];
+	}
+	return 444;
 }
 int main()
 {
@@ -310,6 +328,7 @@ int main()
 		//bot's turn
 		else
 		{
+		    cout<<"gioca il bot"<<turn;
 			bool bol;
 			do {
 				int r = rand() % Amount(pcards[turn]);
