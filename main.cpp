@@ -158,15 +158,6 @@ void Organize(int cartas[])
 		}
 	}
 }
-void RandomCards(int N,int cartas[qtt])
-{
-	int temp;
-	for(int i = 0; i<N; i++)
-	{
-		int pos= rand() % N;
-		Scambio(&cartas[i],&cartas[pos]);
-	}
-}
 void Randomize(int cartas[qtt], int qb, int pcartas[][qtt], int ac, int *cont)
 {
 	*cont = 0;
@@ -244,8 +235,7 @@ int main()
 		cards[cont] = 143 + i;
 		cont++;
 	}
-	RandomCards(qtt,cards);
-	int qbot;
+	int qbot, actcard;
 	do {
 		cout<<"Con quanti bot vuoi giocare? (1-3)";
 		cin>>qbot;
@@ -258,7 +248,7 @@ int main()
 			pcards[i][j] = 444;
 		}
 	}
-	cont = 0;
+	Randomize(cards, qbot, pcards, actcard, &cont);
 	for(int j = 0; j<=qbot; j++)
 	{
 		for(int i = 0; i<7; i++)
@@ -267,10 +257,11 @@ int main()
 			cont++;
 		}
 	}
-	int turn, actcard = cards[cont],plus=0,block=0;
+	//
+	int turn, actcard = cards[cont],plus=0, vers=1;
 	cont++;
-	bool repeat = 0;
 	turn = rand() % (qbot+1);
+	//v quando qualcuno ha vinto
 	int v = -1;
 	cout<<endl<<"Inizia il player "<<turn+1;
 	while(v == -1)
@@ -304,7 +295,7 @@ int main()
 					cont++;
 				}
 				plus = 0;
-				turn = turn == qbot ? turn + 1 : 0;
+				turn = (turn == qbot||turn == 0) ? qbot-turn : 0;
 			}
 		}
 		int choice[15], ncartas;
@@ -324,6 +315,15 @@ int main()
 				}
 				b = Verify(actcard, choice,ncartas,plus);
 			} while(!b);
+			if(choice[0]-choice[0]%10==140)
+			{
+			    cout<<endl<<"Quale colore vuoi?";
+			    cout<<endl<<"1-rosso"<<endl<<"2-verde"<<endl<<"3-giallo"<<endl<<"4-blu";
+			    int colour;
+			    cin>>colour;
+			    actcard-=40;
+			    actcard+=(colour-1)*10;
+			}
 		}
 		//bot's turn
 		else
@@ -342,12 +342,30 @@ int main()
 				}
 				bol = Verify(actcard, choice,ncartas,plus);
 			} while(!bol);
+			if(choice[0]-choice[0]%10==140)
+			{
+			    
+			    actcard-=40;
+			    actcard+=(ChoseColor(pcards[turn]))*10;
+			}
 		}
 		if(cont == qtt)
 		{
 			Randomize(cards,qbot,pcards,actcard,&cont);
 		}
-		turn = turn == qbot ? 0 : turn + 1;
+		//reverse
+		if(actcard-actcard%100+actcard%10==102)
+		{
+		    verso *= -1;
+		    if(qbot==1)
+		        turn += verso;
+		}
+		for(int i = 0;i<block;i++)
+		{
+		    turn+=verso;
+		    cout<<"player "<<turn+1<<" bloccato"<<endl;
+		}
+		turn = (turn == qbot||turn == 0) ? qbot-turn : turn + verso;
 		for(int i = 0; i<qbot; i++)
 		{
 			int j;
