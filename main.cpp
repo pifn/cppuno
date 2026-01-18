@@ -24,7 +24,7 @@ end:
     ids:
         0 for skip
         1 for draw two
-        2 for reverse
+        2 for reversoe
 
         3 for wild card
         4 for wild draw four
@@ -34,7 +34,7 @@ empty is 444
 /*Uno includes 108 cards:
  25 in each of four color suits (red, yellow, green, blue),
   each suit consisting of one zero, two each of 1 through 9,
- and two each of the action cards "Skip", "Draw Two", and "Reverse".
+ and two each of the action cards "Skip", "Draw Two", and "Reversoe".
  The deck also attains four "Wild" cards and four "Wild Draw Four"*/
 //quando si gioca un card nero chiede il colore e cambia l'id della active card in base alla scelta
 
@@ -174,7 +174,6 @@ void Randomize(int cartas[qtt], int qb, int pcartas[][qtt], int ac, int *cont)
 	for(k = 0; cartas[k]!=ac; k++);
 	Scambio(&cartas[k],&cartas[*cont]);
 	*cont++;
-
 	for(int i = *cont; i<qtt; i++)
 	{
 		int r = (rand() % (qtt-*cont))+*cont;
@@ -235,7 +234,8 @@ int main()
 		cards[cont] = 143 + i;
 		cont++;
 	}
-	int qbot, actcard;
+	cont=0;
+	int qbot;
 	do {
 		cout<<"Con quanti bot vuoi giocare? (1-3)";
 		cin>>qbot;
@@ -248,7 +248,12 @@ int main()
 			pcards[i][j] = 444;
 		}
 	}
+	int actcard = 444;
 	Randomize(cards, qbot, pcards, actcard, &cont);
+	do{
+	    actcard = cards[cont];
+	    cont++;
+	}while(actcard-actcard%100>0);
 	for(int j = 0; j<=qbot; j++)
 	{
 		for(int i = 0; i<7; i++)
@@ -258,16 +263,15 @@ int main()
 		}
 	}
 	//
-	int turn, actcard = cards[cont],plus=0, vers=1;
-	cont++;
-	turn = rand() % (qbot+1);
+	int turn,plus=0, verso=1, block=0;
+	turn = rand() % qbot;
 	//v quando qualcuno ha vinto
 	int v = -1;
 	cout<<endl<<"Inizia il player "<<turn+1;
 	while(v == -1)
 	{
-
 		//mostrar as cartas!!!!!!!!!!!!!
+		//tutto questo pezzo vai embora dps e troca p um melhor 
 		for(int i = 0; i<=qbot; i++)
 		{
 			cout<<endl<<"player "<<i+1<<endl;
@@ -279,6 +283,9 @@ int main()
 				cout<<endl;
 			}
 		}
+		cout<<endl<<"active card: ";
+	    CardName(actcard);
+	    //até aqui
 		if(plus>0)
 		{
 			bool pus=0;
@@ -353,7 +360,7 @@ int main()
 		{
 			Randomize(cards,qbot,pcards,actcard,&cont);
 		}
-		//reverse
+		//reverso
 		if(actcard-actcard%100+actcard%10==102)
 		{
 		    verso *= -1;
