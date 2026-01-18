@@ -1,43 +1,10 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+
 using namespace std;
+
 #define qtt 170
-#define Mx 2 //tamanho do mapa na horizontal
-#define My 2 //tamanho do mapa na vertical
-const float QCx = (Mx-Mx%5)/5;
-const float QCy = (My-My%5)/5;
-
-/*
-cards names:
-start:
-    0 for number
-    1 for special card
-middle:
-    0 for red
-    1 for yellow
-    2 for green
-    3 for blue
-    4 for wild
-end:
-    number itself or id
-    ids:
-        0 for skip
-        1 for draw two
-        2 for reversoe
-
-        3 for wild card
-        4 for wild draw four
-
-empty is 444
-*/
-/*Uno includes 108 cards:
- 25 in each of four color suits (red, yellow, green, blue),
-  each suit consisting of one zero, two each of 1 through 9,
- and two each of the action cards "Skip", "Draw Two", and "Reversoe".
- The deck also attains four "Wild" cards and four "Wild Draw Four"*/
-//quando si gioca un card nero chiede il colore e cambia l'id della active card in base alla scelta
-
 void Scambio(int *a, int *b)
 {
 	*a += *b;
@@ -46,6 +13,7 @@ void Scambio(int *a, int *b)
 }
 void CardName(int card)
 {
+	cout<<"\033[1;"<<31+((card % 100 - card % 10)/10)<<"m ";
 	if((card - card%100)/100==1&&card%100-card%10!=40)
 	{
 		switch(card %10)
@@ -72,20 +40,16 @@ void CardName(int card)
 	switch((card % 100 - card % 10)/10)
 	{
 	case 0:
-		cout<<"\033[1;31m ";
-		cout<<" rosso \033[0m";
+		cout<<" rosso";
 		break;
 	case 1:
-		cout<<"\033[1;32m ";
-		cout<<" verde \033[0m";
+		cout<<" verde";
 		break;
 	case 2:
-		cout<<"\033[1;33m ";
-		cout<<" giallo \033[0m";
+		cout<<" giallo";
 		break;
 	case 3:
-		cout<<"\033[1;34m ";
-		cout<<" blu \033[0m";
+		cout<<" blu";
 		break;
 	case 4:
 		//Wild
@@ -97,23 +61,27 @@ void CardName(int card)
 		}
 		break;
 	default:
-		cout<<endl<<"\033[1;31m errore nel 1 switch in function CardName \033[0m ";
+		cout<<endl<<"\033[1;31m errore nel 1 switch in function CardName";
 		break;
 	}
+	cout<<"\033[0m";
 }
 //ac = active card
 //pc = card(s) being played
 //cu = amount of cards
 //ps= plus
-//errore:dice sempre si per i numeri e no per i +4
 bool Verify(int ac, int pc[],int cu, int ps)
 {
 	int i;
+	//ve se todas as cartas na lista sao a mesma
 	for(i = 0; (i<cu-1)&&((pc[i]-pc[i]%100)==(pc[i+1]-pc[i+1]%100)); i++);
+	//se sao a mesma carta(chega no fim da array)
 	if(i==cu-1)
 	{
-		if((ps>0)&&(((ac-(ac%100)+ac%10)==101)||((ac-(ac%100)+ac%10)==104)))
+		//se tem cartas de + na mesa
+		if((ps>0)/*&&(((ac-(ac%100)+ac%10)==101)||((ac-(ac%100)+ac%10)==104))*/)
 		{
+			//se a carta for do mesmo tipo q a active card
 			if((ac-(ac%100)+ac%10)==(pc[0]-(pc[0]%100)+pc[0]%10))
 				return 1;
 			else
@@ -122,10 +90,13 @@ bool Verify(int ac, int pc[],int cu, int ps)
 		}
 		else
 		{
+			//se for a mesma cor
 			if(((ac%100)-(ac%10))==((pc[0]%100)-(pc[0]%10)))
 				return 1;
+			//se for a mesma carta
 			else if((ac-((ac%100)-(ac%10)))==(pc[0]-((pc[0]%100)-(pc[0]%10))))
 				return 1;
+			//se a carta q a pessoa ta jogando C) preta
 			else if(((pc[0]%100)-(pc[0]%10))==4)
 				return 1;
 			else
@@ -138,17 +109,17 @@ bool Verify(int ac, int pc[],int cu, int ps)
 int Amount(int c[])
 {
 	int i;
-	for(i = 0; c[i] != 444; i++);
+	for(i = 0; (i<qtt&&(c[i] != 444)); i++);
 	return i;
 }
-
+//bubble sort
 void Organize(int cartas[])
 {
 	bool v = 1;
 	while(v)
 	{
 		v = 0;
-		for(int i =0; i<qtt; i++)
+		for(int i =0; i<Amount(cartas); i++)
 		{
 			if(cartas[i+1]<cartas[i])
 			{
@@ -171,9 +142,12 @@ void Randomize(int cartas[qtt], int qb, int pcartas[][qtt], int ac, int *cont)
 			*cont++;
 		}
 	}
-	for(k = 0; cartas[k]!=ac; k++);
-	Scambio(&cartas[k],&cartas[*cont]);
-	*cont++;
+	if(ac!=444)
+	{
+		for(k = 0; cartas[k]!=ac; k++);
+		Scambio(&cartas[k],&cartas[*cont]);
+		*cont++;
+	}
 	for(int i = *cont; i<qtt; i++)
 	{
 		int r = (rand() % (qtt-*cont))+*cont;
@@ -182,19 +156,19 @@ void Randomize(int cartas[qtt], int qb, int pcartas[][qtt], int ac, int *cont)
 }
 int ChoseColor(int cartas[qtt])
 {
-    int r[] = {0,0,0,0};
-    for(int i = 0;i<Amount(cartas);i++)
-        r[(cartas[i]%100-cartas[i]%10)/10]++;
+	int r[] = {0,0,0,0};
+	for(int i = 0; i<Amount(cartas); i++)
+		r[(cartas[i]%100-cartas[i]%10)/10]++;
 	int s = 0;
-	for(int i = 0;i<4;i++)
-	    s+=r[i];
+	for(int i = 0; i<4; i++)
+		s+=r[i];
 	int random = (rand() % s )+ 1;
-	for(int i = 0;i<4;i++)
+	for(int i = 0; i<4; i++)
 	{
-	    if(random<=r[i])
-	        return i;
-        else 
-            random -= r[i];
+		if(random<=r[i])
+			return i;
+		else
+			random -= r[i];
 	}
 	return 444;
 }
@@ -250,19 +224,19 @@ int main()
 	}
 	int actcard = 444;
 	Randomize(cards, qbot, pcards, actcard, &cont);
-	do{
-	    actcard = cards[cont];
-	    cont++;
-	}while(actcard-actcard%100>0);
-	for(int j = 0; j<=qbot; j++)
+	do {
+		actcard = cards[cont];
+		cont++;
+	} while(actcard-actcard%100>0);
+	for(int i = 0; i<=qbot; i++)
 	{
-		for(int i = 0; i<7; i++)
+		for(int j = 0; j<7; j++)
 		{
-			pcards[j][i] = cards[cont];
+			pcards[i][j] = cards[cont];
 			cont++;
 		}
+		Organize(pcards[i]);
 	}
-	//
 	int turn,plus=0, verso=1, block=0;
 	turn = rand() % qbot;
 	//v quando qualcuno ha vinto
@@ -271,21 +245,21 @@ int main()
 	while(v == -1)
 	{
 		//mostrar as cartas!!!!!!!!!!!!!
-		//tutto questo pezzo vai embora dps e troca p um melhor 
-		for(int i = 0; i<=qbot; i++)
+		//tutto questo pezzo vai embora dps e troca p um melhor
+		for(int i = qbot;i>=0;i--)
 		{
-			cout<<endl<<"player "<<i+1<<endl;
-			for(int j = 0; j<7; j++)
-			{
-				cout<<"id carta "<<j+1<<" :"<<pcards[i][j]<<endl;
-				cout<<"carta: ";
-				CardName(pcards[i][j]);
-				cout<<endl;
-			}
+		    cout<<endl<<"player "<<i+1;
+		    for(int j = 0;j<Amount(pcards[i]);j++)
+		    {
+		        cout<<endl<<"id carta: "<<pcards[i][j];
+		        cout<<endl<<"carta "<<j+1<<": ";
+		        CardName(pcards[i][j]);
+		    }
+		    cout<<endl;
 		}
 		cout<<endl<<"active card: ";
-	    CardName(actcard);
-	    //até aqui
+		CardName(actcard);
+		//ate aqui
 		if(plus>0)
 		{
 			bool pus=0;
@@ -324,18 +298,18 @@ int main()
 			} while(!b);
 			if(choice[0]-choice[0]%10==140)
 			{
-			    cout<<endl<<"Quale colore vuoi?";
-			    cout<<endl<<"1-rosso"<<endl<<"2-verde"<<endl<<"3-giallo"<<endl<<"4-blu";
-			    int colour;
-			    cin>>colour;
-			    actcard-=40;
-			    actcard+=(colour-1)*10;
+				cout<<endl<<"Quale colore vuoi?";
+				cout<<endl<<"1-rosso"<<endl<<"2-verde"<<endl<<"3-giallo"<<endl<<"4-blu";
+				int colour;
+				cin>>colour;
+				actcard-=40;
+				actcard+=(colour-1)*10;
 			}
 		}
 		//bot's turn
 		else
 		{
-		    cout<<"gioca il bot"<<turn;
+			cout<<"gioca il bot"<<turn;
 			bool bol;
 			do {
 				int r = rand() % Amount(pcards[turn]);
@@ -351,9 +325,9 @@ int main()
 			} while(!bol);
 			if(choice[0]-choice[0]%10==140)
 			{
-			    
-			    actcard-=40;
-			    actcard+=(ChoseColor(pcards[turn]))*10;
+
+				actcard-=40;
+				actcard+=(ChoseColor(pcards[turn]))*10;
 			}
 		}
 		if(cont == qtt)
@@ -363,17 +337,17 @@ int main()
 		//reverso
 		if(actcard-actcard%100+actcard%10==102)
 		{
-		    verso *= -1;
-		    if(qbot==1)
-		        turn += verso;
+			verso *= -1;
+			if(qbot==1)
+				turn += verso;
 		}
-		for(int i = 0;i<block;i++)
+		for(int i = 0; i<block; i++)
 		{
-		    turn+=verso;
-		    cout<<"player "<<turn+1<<" bloccato"<<endl;
+			turn+=verso;
+			cout<<"player "<<turn+1<<" bloccato"<<endl;
 		}
 		turn = (turn == qbot||turn == 0) ? qbot-turn : turn + verso;
-		for(int i = 0; i<qbot; i++)
+		for(int i = 0; i<=qbot; i++)
 		{
 			int j;
 			for(j = 0; pcards[i][j]!=444; j++);
